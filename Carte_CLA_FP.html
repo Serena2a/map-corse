@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Liaisons aériennes Europe - Corse avec données</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <style>
+    #map { height: 700px; width: 100%; }
+  </style>
+</head>
+<body>
+
+<h2>Liaisons aériennes CORSICA linea Airways depuis l'Europe et Amérique du Nord vers la Corse</h2>
+<div id="map"></div>
+
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<script>
+  // Initialisation de la carte centrée sur Europe
+  var map = L.map('map').setView([50, 10], 4);
+
+  // Couche OpenStreetMap
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; OpenStreetMap contributors'
+  }).addTo(map);
+
+  // Villes / Aéroports départ avec données complémentaires
+  var origins = {
+    "Paris Charles de Gaulle": {coords: [49.0097, 2.5479], passengers: 70, population: 7},
+    "Londres Heathrow": {coords: [51.4700, -0.4543], passengers: 84, population: 14},
+    "Francfort": {coords: [50.0379, 8.5622], passengers: 61, population: 2.5},
+    "Stockholm": {coords: [59.6519, 17.9186], passengers: 30, population: 1.6},
+    "Amsterdam": {coords: [52.3105, 4.7683], passengers: 65, population: 7},
+    "Dublin": {coords: [53.4213, -6.2701], passengers: 30, population: 1.5},
+    "Oslo": {coords: [60.1939, 11.1004], passengers: 28, population: 0.6},
+    "Helsinki": {coords: [60.3172, 24.9633], passengers: 16, population: 1.6},
+    "Copenhague": {coords: [55.6181, 12.6560], passengers: 29, population: 0.6},
+    "Reykjavik": {coords: [64.1355, -21.8954], passengers: 3, population: 0.2},
+    "New York JFK": {coords: [40.6413, -73.7781], passengers: 100, population: 20},
+    "Montréal Trudeau": {coords: [45.4706, -73.7408], passengers: 20, population: 4.1}
+  };
+
+  // Aéroports en Corse
+  var destinations = {
+    "Ajaccio": [41.9192, 8.7386],
+    "Bastia": [42.5536, 9.4835],
+    "Calvi": [42.5667, 8.7933],
+    "Figari": [41.5041, 9.0976]
+  };
+
+  // Ajouter marqueurs pour les origines avec infobulles enrichies
+  for (var city in origins) {
+    var o = origins[city];
+    var popupContent = "<b>" + city + "</b><br>" +
+                       "Passagers hub : " + o.passengers + " M<br>" +
+                       "Population métropole : " + o.population + " M";
+    L.marker(o.coords).addTo(map).bindPopup(popupContent);
+  }
+
+  // Icône rouge personnalisée pour aéroports corses
+  var airportIcon = L.icon({
+    iconUrl: 'https://cdn-icons-png.flaticon.com/512/684/684908.png',
+    iconSize: [25, 25],
+    iconAnchor: [12, 25],
+    popupAnchor: [0, -25]
+  });
+
+  // Ajouter marqueurs pour destinations (aéroports corses)
+  for (var airport in destinations) {
+    L.marker(destinations[airport], {icon: airportIcon}).addTo(map).bindPopup(airport + " (Corse)");
+  }
+
+  // Tracer liaisons vers les aéroports corses
+  for (var city in origins) {
+    for (var airport in destinations) {
+      L.polyline([origins[city].coords, destinations[airport]], {
+        color: 'blue',
+        weight: 1.5,
+        opacity: 0.5
+      }).addTo(map);
+    }
+  }
+</script>
+
+</body>
+</html>
